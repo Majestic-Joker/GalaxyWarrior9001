@@ -383,6 +383,23 @@ class MainScene extends Phaser.Scene {
         return new Date().getTime();
     }
 
+    //reset everything in the constuctor to original values on player death
+    resetConstructor(){
+        this.lastSpawned = 0;
+        this.spawnTime = 3000;
+        this.score = 0;
+        this.goal = 25;
+        this.killCount = 0;
+        this.playerHealth = 1;
+        this.playerLives = 3;
+        this.playerShield = 0;
+        this.stage = 1;
+        this.bossHP = 50;
+        this.boss = false;
+        this.bossCreated = false;
+        this.gameOver = false;
+    }
+
     /**
      * Runs during update() if the "gameOver" flag has been set.
      * Resets the game.
@@ -390,24 +407,19 @@ class MainScene extends Phaser.Scene {
     onGameOver() {
         // Save the score
         this.saveScore();
-        // Reset timers for enemy spawn
-        this.lastSpawned = 0;
-        this.spawnTime = 5000;
-        // Destroy all the stuff
+        // Reset everything
+        this.resetConstructor();
+        // Destroy the player
         this.player.destroy();
-        // Reset game over variable
-        this.gameOver = false;
-        // Reset score
-        this.score = 0;
-        this.killCount = 0;
-        // stop bgm
+        
+        // stop all bgm
         if(this.mainBGM.isPlaying)
             this.mainBGM.stop();
         
         if(this.bossBGM.isPlaying)
             this.bossBGM.stop();
 
-        // Restart the game
+        // Send back to title.
         this.scene.start('TitleScene');
     }
 
@@ -446,7 +458,7 @@ class MainScene extends Phaser.Scene {
         // x will be between 25 and 425
         const x = (Math.random() * 400) + 25;
         // Creates the actual enemy object at the given position
-        this.createEnemy('EnemyM', x, 50, 64, 64, 3, true, EnemyM);
+        this.createEnemy('EnemyM', x, 50, 30, 5, 3, true, EnemyM);
         // Set the spawn timer and time between spawns
         this.lastSpawned = this.now();
         this.spawnTime *= .9;
